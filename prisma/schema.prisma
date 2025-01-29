@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
+  password String
+  role     String    @unique
+  Employee Employee?
+}
+
+model Employee {
+  id       Int    @id @default(autoincrement())
+  fullName String
+  phone    String
+  status   String
+
+  userId     Int @unique
+  locationId Int
+
+  user     User     @relation(fields: [userId], references: [id])
+  location Location @relation(fields: [locationId], references: [id])
+  Shift    Shift[]
+}
+
+model Shift {
+  id        Int      @id @default(autoincrement())
+  startTime DateTime
+  endTime   DateTime
+
+  employeeId Int
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+}
+
+model Booking {
+  id Int @id @default(autoincrement())
+
+  startTime DateTime
+  endTime   DateTime
+  status    String
+  comment   String
+
+  roomId   Int
+  clientId Int
+
+  room   Room   @relation(fields: [roomId], references: [id])
+  client Client @relation(fields: [clientId], references: [id])
+}
+
+model Room {
+  id     Int    @id @default(autoincrement())
+  name   String
+  status String
+
+  locationId Int
+
+  location Location  @relation(fields: [locationId], references: [id])
+  Booking  Booking[]
+}
+
+model Location {
+  id Int @id @default(autoincrement())
+
+  name     String
+  address  String
+  Employee Employee[]
+  Room     Room[]
+  Product  Product[]
+}
+
+model Client {
+  id Int @id @default(autoincrement())
+
+  fullName    String
+  phone       String
+  comment     String
+  Booking     Booking[]
+  Transaction Transaction[]
+}
+
+model Transaction {
+  id Int @id @default(autoincrement())
+
+  name          String
+  amount        Int
+  type          String
+  paymentMethod String
+  date          DateTime
+
+  clientId Int
+
+  client Client @relation(fields: [clientId], references: [id])
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+
+  name  String
+  price Float
+  stock Int
+
+  locationId Int
+  categoryId Int
+
+  location Location @relation(fields: [locationId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Category {
+  id Int @id @default(autoincrement())
+
+  name    String
+  Product Product[]
+}
