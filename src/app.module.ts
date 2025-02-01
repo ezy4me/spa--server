@@ -13,10 +13,35 @@ import { ProductModule } from './modules/product/product.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ClientModule } from './modules/client/client.module';
 import { TransactionModule } from './modules/transaction/transaction.module';
+import { DatabaseService } from '@database/database.service';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [DatabaseModule, AuthModule, UserModule, EmployeeModule, ShiftModule, BookingModule, RoomModule, LocationModule, ProductModule, CategoryModule, ClientModule, TransactionModule],
+  imports: [
+    DatabaseModule,
+    AuthModule,
+    UserModule,
+    EmployeeModule,
+    ShiftModule,
+    BookingModule,
+    RoomModule,
+    LocationModule,
+    ProductModule,
+    CategoryModule,
+    ClientModule,
+    TransactionModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    DatabaseService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
