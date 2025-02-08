@@ -17,6 +17,7 @@ import { DatabaseService } from '@database/database.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { ConfigModule } from '@nestjs/config';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ConfigModule } from '@nestjs/config';
     ClientModule,
     TransactionModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [
