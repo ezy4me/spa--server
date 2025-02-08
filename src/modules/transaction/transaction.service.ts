@@ -8,7 +8,11 @@ export class TransactionService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async getAllTransactions(): Promise<Transaction[]> {
-    return this.databaseService.transaction.findMany();
+    return this.databaseService.transaction.findMany({
+      include: {
+        client: true,
+      },
+    });
   }
 
   async getOneTransactionById(
@@ -16,6 +20,9 @@ export class TransactionService {
   ): Promise<Transaction | null> {
     return this.databaseService.transaction.findUnique({
       where: { id: transactionId },
+      include: {
+        client: true,
+      },
     });
   }
 
