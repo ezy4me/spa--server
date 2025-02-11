@@ -34,7 +34,7 @@ export class DashboardService {
     const lowStockProducts = await this.databaseService.product.findMany({
       where: {
         stock: {
-          lt: 5,
+          lt: 15,
         },
       },
       select: {
