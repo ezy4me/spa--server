@@ -33,6 +33,14 @@ export class EmployeeController {
     return this.employeeService.getOneEmployeeById(employeeId);
   }
 
+  @Public()
+  @Get('/user/:userId')
+  async getOneEmployeeByUserId(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<Employee | null> {
+    return this.employeeService.getOneEmployeeByUserId(userId);
+  }
+
   @Post()
   async createEmployee(@Body() employeeDto: EmployeeDto): Promise<Employee> {
     return this.employeeService.createEmployee(employeeDto);

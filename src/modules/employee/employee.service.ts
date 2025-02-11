@@ -17,6 +17,12 @@ export class EmployeeService {
     });
   }
 
+  async getOneEmployeeByUserId(userId: number): Promise<Employee | null> {
+    return this.databaseService.employee.findUnique({
+      where: { userId: userId },
+    });
+  }
+
   async createEmployee(dto: EmployeeDto): Promise<Employee> {
     return this.databaseService.employee.create({
       data: {
