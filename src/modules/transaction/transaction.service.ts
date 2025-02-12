@@ -11,6 +11,11 @@ export class TransactionService {
     return this.databaseService.transaction.findMany({
       include: {
         client: true,
+        TransactionProducts: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
   }
@@ -22,26 +27,66 @@ export class TransactionService {
       where: { id: transactionId },
       include: {
         client: true,
+        TransactionProducts: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
   }
 
   async createTransaction(dto: TransactionDto): Promise<Transaction> {
-    return this.databaseService.transaction.create({
+    const { transactionProducts, ...transactionData } = dto;
+
+    const createdTransaction = await this.databaseService.transaction.create({
       data: {
-        ...dto,
+        ...transactionData,
+        TransactionProducts: transactionProducts
+          ? {
+              create: transactionProducts.map((product) => ({
+                productId: product.productId,
+                quantity: product.quantity,
+                price: product.price,
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        TransactionProducts: true,
       },
     });
+
+    return createdTransaction;
   }
 
   async updateTransaction(
     transactionId: number,
     dto: TransactionDto,
   ): Promise<Transaction> {
-    return this.databaseService.transaction.update({
+    const { transactionProducts, ...transactionData } = dto;
+
+    const updatedTransaction = await this.databaseService.transaction.update({
       where: { id: transactionId },
-      data: dto,
+      data: {
+        ...transactionData,
+        TransactionProducts: transactionProducts
+          ? {
+              deleteMany: {},
+              create: transactionProducts.map((product) => ({
+                productId: product.productId,
+                quantity: product.quantity,
+                price: product.price,
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        TransactionProducts: true,
+      },
     });
+
+    return updatedTransaction;
   }
 
   async deleteTransaction(transactionId: number): Promise<Transaction | null> {
