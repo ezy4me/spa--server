@@ -18,6 +18,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { ConfigModule } from '@nestjs/config';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { RevenueModule } from './modules/revenue/revenue.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     TransactionModule,
     ConfigModule.forRoot({ isGlobal: true }),
     DashboardModule,
+    RevenueModule,
   ],
   controllers: [AppController],
   providers: [
