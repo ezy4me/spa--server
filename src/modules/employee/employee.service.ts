@@ -8,18 +8,31 @@ export class EmployeeService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async getAllEmployees(): Promise<Employee[]> {
-    return this.databaseService.employee.findMany();
+    return this.databaseService.employee.findMany({
+      include: {
+        user: true,
+        location: true,
+      },
+    });
   }
 
   async getOneEmployeeById(employeeId: number): Promise<Employee | null> {
     return this.databaseService.employee.findUnique({
       where: { id: employeeId },
+      include: {
+        user: true,
+        location: true,
+      },
     });
   }
 
   async getOneEmployeeByUserId(userId: number): Promise<Employee | null> {
     return this.databaseService.employee.findUnique({
       where: { userId: userId },
+      include: {
+        user: true,
+        location: true,
+      },
     });
   }
 
