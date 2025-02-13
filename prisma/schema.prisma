@@ -139,6 +139,6 @@ model TransactionProducts {
   quantity      Int
   price         Float
 
-  transaction Transaction @relation(fields: [transactionId], references: [id])
-  product     Product     @relation(fields: [productId], references: [id])
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
