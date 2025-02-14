@@ -33,6 +33,13 @@ export class ShiftController {
     return this.shiftService.getOneShiftById(shiftId);
   }
 
+  @Get('/user/:userId')
+  async getShiftsByUserId(
+    @Param('userId', ParseIntPipe) userId: number,
+  ): Promise<Shift[] | null> {
+    return this.shiftService.getShiftsByUserId(userId);
+  }
+
   @Post()
   async createShift(@Body() shiftDto: ShiftDto): Promise<Shift> {
     return this.shiftService.createShift(shiftDto);

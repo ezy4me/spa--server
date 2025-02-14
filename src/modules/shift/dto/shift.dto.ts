@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsString, IsOptional } from 'class-validator';
 
 export class ShiftDto {
   @ApiProperty()
@@ -7,10 +7,17 @@ export class ShiftDto {
   startTime: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsString()
-  endTime: string;
+  endTime?: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsNumber()
-  employeeId: number;
+  employeeId?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsNumber()
+  userId?: number;
 }
