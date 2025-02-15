@@ -24,9 +24,18 @@ export class ShiftService {
     const employee = await this.databaseService.employee.findUnique({
       where: { userId },
     });
+
+    if (!employee) return null;
+
     return this.databaseService.shift.findMany({
-      where: { employeeId: employee?.id },
-      include: { employee: true },
+      where: { employeeId: employee.id },
+      include: {
+        employee: {
+          include: {
+            location: true,
+          },
+        },
+      },
     });
   }
 

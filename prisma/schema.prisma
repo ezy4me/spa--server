@@ -19,7 +19,7 @@ model User {
   id       Int       @id @default(autoincrement())
   username String    @unique
   password String
-  role     String    @unique
+  role     String    
   Employee Employee?
   Token    Token[]
 }
