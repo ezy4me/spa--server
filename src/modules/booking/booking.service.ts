@@ -35,6 +35,8 @@ export class BookingService {
   }
 
   async updateBooking(bookingId: number, dto: BookingDto): Promise<Booking> {
+    console.log(dto);
+
     return this.databaseService.booking.update({
       where: { id: bookingId },
       data: dto,
@@ -44,6 +46,23 @@ export class BookingService {
   async deleteBooking(bookingId: number): Promise<Booking | null> {
     return this.databaseService.booking.delete({
       where: { id: bookingId },
+    });
+  }
+
+  async updateBookingStatus(
+    bookingId: number,
+    status: string,
+  ): Promise<Booking> {
+    return this.databaseService.booking.update({
+      where: { id: bookingId },
+      data: { status },
+    });
+  }
+
+  async extendBooking(bookingId: number, endTime: Date): Promise<Booking> {
+    return this.databaseService.booking.update({
+      where: { id: bookingId },
+      data: { endTime: endTime },
     });
   }
 }

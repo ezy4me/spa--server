@@ -7,6 +7,7 @@ import {
   Body,
   ParseIntPipe,
   Delete,
+  Patch,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { Booking } from '@prisma/client';
@@ -51,5 +52,21 @@ export class BookingController {
     @Param('bookingId', ParseIntPipe) bookingId: number,
   ): Promise<Booking | null> {
     return this.bookingService.deleteBooking(bookingId);
+  }
+
+  @Patch(':bookingId/status')
+  async updateBookingStatus(
+    @Param('bookingId', ParseIntPipe) bookingId: number,
+    @Body('status') status: string,
+  ): Promise<Booking> {
+    return this.bookingService.updateBookingStatus(bookingId, status);
+  }
+
+  @Patch(':bookingId/extend')
+  async extendBooking(
+    @Param('bookingId', ParseIntPipe) bookingId: number,
+    @Body('endTime  ') endTime: string,
+  ): Promise<Booking> {
+    return this.bookingService.extendBooking(bookingId, new Date(endTime));
   }
 }
