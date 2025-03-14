@@ -7,7 +7,9 @@ import {
   Body,
   ParseIntPipe,
   Delete,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { TransactionService } from './transaction.service';
 import { Transaction } from '@prisma/client';
 import { TransactionDto } from './dto';
@@ -56,5 +58,26 @@ export class TransactionController {
     @Param('transactionId', ParseIntPipe) transactionId: number,
   ): Promise<Transaction | null> {
     return this.transactionService.deleteTransaction(transactionId);
+  }
+
+  @Public()
+  @Get(':transactionId/report')
+  async generateTransactionReport(
+    @Param('transactionId', ParseIntPipe) transactionId: number,
+    @Res() res: Response,
+  ) {
+    const buffer =
+      await this.transactionService.generateTransactionReport(transactionId);
+
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=transaction_${transactionId}.docx`,
+    );
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    );
+
+    res.send(buffer);
   }
 }
