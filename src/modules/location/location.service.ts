@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '@database/database.service';
-import { Location } from '@prisma/client';
+import { Location, Employee } from '@prisma/client';
 import { LocationDto } from './dto';
 
 @Injectable()
@@ -14,6 +14,15 @@ export class LocationService {
   async getOneLocationById(locationId: number): Promise<Location | null> {
     return this.databaseService.location.findUnique({
       where: { id: locationId },
+    });
+  }
+
+  async getEmployeesByLocationId(locationId: number): Promise<Employee[]> {
+    return this.databaseService.employee.findMany({
+      where: { locationId },
+      include: {
+        user: true,
+      },
     });
   }
 

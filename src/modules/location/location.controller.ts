@@ -9,7 +9,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { LocationService } from './location.service';
-import { Location } from '@prisma/client';
+import { Location, Employee } from '@prisma/client';
 import { LocationDto } from './dto';
 import { Public } from '@common/decorators';
 import { ApiTags } from '@nestjs/swagger';
@@ -31,6 +31,14 @@ export class LocationController {
     @Param('locationId', ParseIntPipe) locationId: number,
   ): Promise<Location | null> {
     return this.locationService.getOneLocationById(locationId);
+  }
+
+  @Public()
+  @Get(':locationId/employees')
+  async getEmployeesByLocationId(
+    @Param('locationId', ParseIntPipe) locationId: number,
+  ): Promise<Employee[]> {
+    return this.locationService.getEmployeesByLocationId(locationId);
   }
 
   @Post()
