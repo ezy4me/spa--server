@@ -350,7 +350,6 @@ export class TransactionService {
                                   size: 24,
                                 }),
                               ],
-                              
                               spacing: { after: 100 },
                             }),
                           ],
