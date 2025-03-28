@@ -51,23 +51,44 @@ export class TransactionService {
   async createTransaction(dto: TransactionDto): Promise<Transaction> {
     const { transactionProducts, ...transactionData } = dto;
 
-    return this.databaseService.transaction.create({
-      data: {
-        ...transactionData,
-        TransactionProducts: transactionProducts
-          ? {
-              create: transactionProducts.map((product) => ({
-                productId: product.productId,
-                quantity: product.quantity,
-                price: product.price,
-              })),
-            }
-          : undefined,
+    const createdTransaction = await this.databaseService.$transaction(
+      async (prisma) => {
+        const transaction = await prisma.transaction.create({
+          data: {
+            ...transactionData,
+            TransactionProducts: transactionProducts
+              ? {
+                  create: transactionProducts.map((product) => ({
+                    productId: product.productId,
+                    quantity: product.quantity,
+                    price: product.price,
+                  })),
+                }
+              : undefined,
+          },
+          include: {
+            TransactionProducts: true,
+          },
+        });
+
+        if (transactionProducts) {
+          for (const product of transactionProducts) {
+            await prisma.product.update({
+              where: { id: product.productId },
+              data: {
+                stock: {
+                  decrement: product.quantity,
+                },
+              },
+            });
+          }
+        }
+
+        return transaction;
       },
-      include: {
-        TransactionProducts: true,
-      },
-    });
+    );
+
+    return createdTransaction;
   }
 
   async updateTransaction(
@@ -76,25 +97,64 @@ export class TransactionService {
   ): Promise<Transaction> {
     const { transactionProducts, ...transactionData } = dto;
 
-    return this.databaseService.transaction.update({
-      where: { id: transactionId },
-      data: {
-        ...transactionData,
-        TransactionProducts: transactionProducts
-          ? {
-              deleteMany: {},
-              create: transactionProducts.map((product) => ({
-                productId: product.productId,
-                quantity: product.quantity,
-                price: product.price,
-              })),
-            }
-          : undefined,
+    const updatedTransaction = await this.databaseService.$transaction(
+      async (prisma) => {
+        const existingTransaction = await prisma.transaction.findUnique({
+          where: { id: transactionId },
+          include: { TransactionProducts: true },
+        });
+
+        if (existingTransaction?.TransactionProducts) {
+          for (const product of existingTransaction.TransactionProducts) {
+            await prisma.product.update({
+              where: { id: product.productId },
+              data: {
+                stock: {
+                  increment: product.quantity,
+                },
+              },
+            });
+          }
+        }
+
+        const transaction = await prisma.transaction.update({
+          where: { id: transactionId },
+          data: {
+            ...transactionData,
+            TransactionProducts: transactionProducts
+              ? {
+                  deleteMany: {},
+                  create: transactionProducts.map((product) => ({
+                    productId: product.productId,
+                    quantity: product.quantity,
+                    price: product.price,
+                  })),
+                }
+              : undefined,
+          },
+          include: {
+            TransactionProducts: true,
+          },
+        });
+
+        if (transactionProducts) {
+          for (const product of transactionProducts) {
+            await prisma.product.update({
+              where: { id: product.productId },
+              data: {
+                stock: {
+                  decrement: product.quantity,
+                },
+              },
+            });
+          }
+        }
+
+        return transaction;
       },
-      include: {
-        TransactionProducts: true,
-      },
-    });
+    );
+
+    return updatedTransaction;
   }
 
   async deleteTransaction(transactionId: number): Promise<Transaction | null> {
