@@ -46,7 +46,7 @@ export class DashboardService {
 
     const activeBookings = await this.databaseService.booking.count({
       where: {
-        status: 'active',
+        status: 'Оплачено',
       },
     });
 
